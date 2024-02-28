@@ -71,12 +71,12 @@ impl Display for Address {
 impl FromStr for Address {
     type Err = ParseAddressError;
 
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        if !value.contains('@') {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if !s.contains('@') {
             return Err(ParseAddressError::MissingUserOrDomain);
         }
 
-        let mut split = value.rsplitn(2, '@');
+        let mut split = s.rsplitn(2, '@');
         let domain = split.next().unwrap_or("");
         let user = split.next().unwrap_or("");
 
@@ -123,5 +123,10 @@ mod test {
         let address = "userdomain.com".parse::<Address>();
         assert!(address.is_err());
     }
-}
 
+    #[test]
+    fn it_formats_the_address_correctly() {
+        let address = Address::try_new("user", "domain.com").unwrap();
+        assert_eq!(address.to_string(), "user@domain.com");
+    }
+}
