@@ -24,6 +24,7 @@ pub enum ParseAddressError {
 ///
 /// let address: Address = "user@domain.com".parse().unwrap();
 /// ```
+#[derive(Clone)]
 pub struct Address {
     user: String,
     domain: String,

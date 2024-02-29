@@ -1,0 +1,115 @@
+use super::mailbox::Mailboxes;
+
+/// Represents an SMTP header
+///
+/// As defined in [RFC 2076](https://www.rfc-editor.org/rfc/rfc2076).
+pub enum Header {
+    /// Trace information.
+    ReturnPath,
+    Received,
+    Path,
+    DlExpansionHistoryIndication,
+    /// Format and control information.
+    MimeVersion,
+    Control,
+    AlsoControl,
+    OriginalEncodedInformationTypes,
+    AlternateRecipient,
+    DiscloseRecipient,
+    ContentDisposition,
+    /// Sender and recipient indication.
+    From(Mailboxes),
+    Approved,
+    Sender,
+    To(Mailboxes),
+    Cc,
+    Bcc,
+    ForHandling,
+    ForComment,
+    Newsgroups,
+    ApparentlyTo,
+    Distribution,
+    Fax,
+    Telefax,
+    Phone,
+    MailSystemVersion,
+    Mailer,
+    OriginatingClient,
+    XMailer,
+    XNewsreader,
+    /// Response control.
+    ReplyTo,
+    FollowupTo,
+    ErrorsTo,
+    ReturnReceiptTo,
+    PreventNonDeliveryReport,
+    GenerateDeliveryReport,
+    ContentReturn,
+    X400ContentReturn,
+    /// Message identification and referral headers.
+    MessageId,
+    ContentId,
+    ContentBase,
+    ContentLocation,
+    InReplyTo,
+    References,
+    SeeAlso,
+    Obsoletes,
+    Supersedes,
+    ArticleUpdates,
+    ArticleNames,
+    /// Other textual headers.
+    Keywords,
+    Subject,
+    Comments,
+    ContentDescription,
+    Organization,
+    Organisation,
+    Summary,
+    ContentIdentifier,
+    /// Headers containing dates and times.
+    DeliveryDate,
+    Date,
+    Expires,
+    ExpiryDate,
+    ReplyBy,
+    /// Quality information.
+    Priority,
+    Precedence,
+    Importance,
+    Sensitivity,
+    IncompleteCopy,
+    /// Language information.
+    Language,
+    ContentLanguage,
+    /// Size information.
+    ContentLength,
+    Lines,
+    /// Conversion control.
+    Conversion,
+    ContentConversion,
+    ConversionWithLoss,
+    /// Encoding information.
+    ContentType,
+    ContentSgmlEntity,
+    ContentTransferEncoding,
+    MessageType,
+    Encoding,
+    /// Resent headers.
+    ResentReplyTo,
+    ResentFrom,
+    ResentSender,
+    ResentDate,
+    ResentTo,
+    ResentCc,
+    ResentBcc,
+    ResentMessageId,
+    /// Security and reliability.
+    ContentMd5,
+    Xref,
+    /// Miscellaneous.
+    Fcc,
+    AutoForwarded,
+    DiscardedX400MtsExtensions,
+    Status,
+}

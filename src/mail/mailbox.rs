@@ -23,6 +23,7 @@ impl From<ParseAddressError> for ParseMailboxError {
 }
 
 /// Represents a mailbox
+#[derive(Clone)]
 pub struct Mailbox {
     name: Option<String>,
     address: Address,
@@ -100,7 +101,7 @@ impl FromStr for Mailbox {
                 let address: Address = address_str.parse()?;
 
                 Ok(Self {
-                    name: name.map(|v| v.to_owned()),
+                    name: name.map(|v| v.trim().to_owned()),
                     address,
                 })
             }
@@ -118,11 +119,48 @@ impl FromStr for Mailbox {
     }
 }
 
+/// Represents multiple mailboxes
+#[derive(Clone)]
+pub struct Mailboxes(Vec<Mailbox>);
+
+impl Display for Mailboxes {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut iter = self.0.iter().peekable();
+
+        while let Some(mailbox) = iter.next() {
+            mailbox.fmt(f)?;
+
+            if iter.peek().is_some() {
+                f.write_str(", ")?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl FromStr for Mailboxes {
+    type Err = ParseMailboxError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.split(",")
+            .map(|m| m.trim().parse::<Mailbox>())
+            .collect::<Result<Vec<_>, _>>()
+            .map(Mailboxes)
+    }
+}
+
+impl From<Mailbox> for Mailboxes {
+    fn from(value: Mailbox) -> Self {
+        Mailboxes(vec![value])
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::mail::Address;
 
-    use super::Mailbox;
+    use super::{Mailbox, Mailboxes};
 
     #[test]
     fn it_creates_a_mailbox_from_valid_data() {
@@ -167,7 +205,9 @@ mod test {
             ">user@domain.com<",
         ];
 
-        assert!(cases.iter().all(|c| c.parse::<Mailbox>().is_err()))
+        for v in cases {
+            assert!(v.parse::<Mailbox>().is_err())
+        }
     }
 
     #[test]
@@ -176,5 +216,48 @@ mod test {
         let mailbox = Mailbox::try_new(Some("name"), address).unwrap();
 
         assert_eq!(mailbox.to_string(), "name <user@domain.com>");
+    }
+
+    #[test]
+    fn it_formats_mailboxes_correctly_single() {
+        let mailboxes = Mailboxes(vec!["name <user@domain.com>".parse().unwrap()]);
+
+        assert_eq!(mailboxes.to_string(), "name <user@domain.com>");
+    }
+
+    #[test]
+    fn it_formats_mailboxes_correctly_multiple() {
+        let mailboxes = Mailboxes(vec![
+            "name <user@domain.com>".parse().unwrap(),
+            "nametwo <usertwo@domaintwo.com>".parse().unwrap(),
+        ]);
+
+        assert_eq!(
+            mailboxes.to_string(),
+            "name <user@domain.com>, nametwo <usertwo@domaintwo.com>"
+        );
+    }
+
+    #[test]
+    fn it_parses_mailboxes_correctly_single() {
+        let mailbox = "name <user@domain.com>".parse::<Mailboxes>();
+
+        assert!(mailbox.is_ok());
+        assert_eq!(mailbox.unwrap().0.len(), 1);
+    }
+
+    #[test]
+    fn it_parses_mailboxes_correctly() {
+        let cases = vec![
+            "name <user@domain.com>, nametwo <usertwo@domaintwo.com>",
+            "name <user@domain.com>, <usertwo@domaintwo.com>",
+            "<user@domain.com>, nametwo <usertwo@domaintwo.com>",
+            "<user@domain.com>, <usertwo@domaintwo.com>",
+            "user@domain.com, usertwo@domaintwo.com",
+        ];
+
+        for v in cases {
+            assert!(v.parse::<Mailboxes>().is_ok())
+        }
     }
 }
