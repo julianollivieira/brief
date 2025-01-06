@@ -1,0 +1,13 @@
+[package]
+name = "brief"
+version = "0.0.1"
+authors = ["Julian Ollivieira"]
+edition = "2021"
+description = "a mail library for Rust"
+documentation = "https://docs.rs/brief"
+repository = "https://github.com/julianollivieira/brief"
+license = "MIT"
+keywords = ["email", "mail", "smtp"]
+categories = ["email"]
+
+[dependencies]
